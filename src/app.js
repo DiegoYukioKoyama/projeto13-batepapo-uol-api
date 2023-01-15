@@ -89,7 +89,6 @@ app.get("/messages", async (req, res) => {
 
     const user = req.headers.user
     const {limit} = req.query
-    let lastMessage = ""
 
     try {
         const resp = await db.collection("messages").find({
@@ -99,9 +98,16 @@ app.get("/messages", async (req, res) => {
                 {to: "Todos"}
             ]
         }).toArray()
-        if(limit) lastMessage = resp.reverse().slice(0, parseInt(limit))
-        else lastMessage = resp.reverse().slice(0)
-        res.send(lastMessage)
+        if(limit > 0 ){
+            return res.send(resp.reverse().slice(0, parseInt(limit)))
+        }
+        else if(!limit){
+            return res.send(resp.reverse().slice(0))
+        }
+        else {
+            return res.sendStatus(422)
+        }
+        
     } catch (err) {
         res.status(500).send(err.message)
     }
