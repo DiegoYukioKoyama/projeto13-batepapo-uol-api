@@ -123,7 +123,9 @@ app.post("/status", async (req, res) => {
 
         if(!resp) return res.sendStatus(404)
     
-        const result = await db.collection("participants").updateOne({name: user}, {$set: {lastStatus} })  
+        const result = await db.collection("participants").updateOne({name: user}, {$set: {lastStatus} }) 
+        if(result.modifiedCount === 0) return res.sendStatus(404)
+
         res.sendStatus(200)
     } catch {
         res.sendStatus(404)
