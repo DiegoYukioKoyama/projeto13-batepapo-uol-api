@@ -85,6 +85,28 @@ app.post("/messages", async (req, res) =>{
     }
 })
 
+app.get("/messages", async (req, res) => {
+
+    const user = req.headers.user
+    const {limit} = req.query
+    let lastMessage = ""
+
+    try {
+        const resp = await db.collection("messages").find({
+            $or: [
+                {from: user},
+                {to: user},
+                {to: "Todos"}
+            ]
+        }).toArray()
+        if(limit) lastMessage = resp.reverse().slice(0, parseInt(limit))
+        else lastMessage = resp.reverse().slice(0)
+        res.send(lastMessage)
+    } catch (err) {
+        res.status(500).send(err.message)
+    }
+})
+
 
 
 
